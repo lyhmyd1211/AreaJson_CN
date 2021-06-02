@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 
 import json
-import urllib.request
+import os
+import ssl
+import time
 # import requests
 import urllib.parse
-import ssl
-import os
-import time
+import urllib.request
+
 from bs4 import BeautifulSoup
 
 # config #
@@ -14,7 +15,7 @@ from bs4 import BeautifulSoup
 year = '2019'       # 年份，目前国家统计局官网有2009-2019年的数据
 level = 3           # 可选：3|5   获取的层级 3层为省-市-区  最多5级省-市-区-县（街道）-乡镇（居委会）
 digit = 6           # 可选：6|12  行政区划代码位数  层级为3级时通常使用6位代码 如110000,层级为5级时使用12位代码 如 110000000000
-head_url = "index"  # 可选：index|各省行政区划前两位  要从哪开始获取 index为全国所有省份  要获取单独的省份修改为省行政区划的前两位
+head_url = "42"  # 可选：index|各省行政区划前两位  要从哪开始获取 index为全国所有省份  要获取单独的省份修改为省行政区划的前两位
 
 # config #
 
@@ -57,7 +58,8 @@ def fetchAreaData(url, index, attrsClass, area):
     if index < level:
         try:
             with urllib.request.urlopen(url, context=context, timeout=3) as response:
-                soup = BeautifulSoup(response.read(), 'html.parser')
+                soup = BeautifulSoup(
+                    response.read(), 'html.parser', fromEncoding="gb18030")
                 tag = soup.find_all(attrs={"class": attrsClass})
                 for tg in tag:
                     villageArr = []
